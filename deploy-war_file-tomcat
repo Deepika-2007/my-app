@@ -1,14 +1,12 @@
 node {
-    stage('Git Checkout'){
-        echo "build from the branch :${params.branch}"
-        git url: 'https://github.com/Deepika-2007/my-app', branch: "${params.branch}"
+  stage('SCM Checkout') {
+      git 'https://github.com/Deepika-2007/my-app'
     }
-    stage('Compile-Package'){
-      // Get maven home path
+  stage('Maven Build'){
       def M2_HOME = tool name: 'maven-3.8.1', type: 'maven'
-      sh "${M2_Home}/bin/mvn package"
+      sh "${M2_HOME}/bin/mvn clean package"
     }
-    stage('Deploy to Tomcat'){ 
+  stage('Deploy to Tomcat'){
       sshagent(['Tomcat-credentials']) {
          sh 'scp -o StrictHostKeyChecking=no target/*.war ec2-user@172.31.26.37:/media/tomcat/webapps/'
       }
